@@ -1,0 +1,144 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-create-task-executions-table
+      author: flowforge
+      changes:
+        - createTable:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: workflow_execution_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_task_exec_wf_exec
+                    references: workflow_executions(id)
+              - column:
+                  name: workflow_task_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_task_exec_wf_task
+                    references: workflow_tasks(id)
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attempt_number
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_attempts
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: input
+                  type: jsonb
+              - column:
+                  name: output
+                  type: jsonb
+              - column:
+                  name: queued_at
+                  type: timestamp with time zone
+              - column:
+                  name: started_at
+                  type: timestamp with time zone
+              - column:
+                  name: completed_at
+                  type: timestamp with time zone
+              - column:
+                  name: next_retry_at
+                  type: timestamp with time zone
+              - column:
+                  name: timeout_at
+                  type: timestamp with time zone
+              - column:
+                  name: error_message
+                  type: text
+              - column:
+                  name: error_code
+                  type: varchar(100)
+              - column:
+                  name: error_stack_trace
+                  type: text
+              - column:
+                  name: http_status_code
+                  type: int
+              - column:
+                  name: response_body
+                  type: text
+              - column:
+                  name: worker_id
+                  type: varchar(100)
+              - column:
+                  name: logs
+                  type: text
+              - column:
+                  name: metrics
+                  type: jsonb
+              - column:
+                  name: condition_evaluated
+                  type: boolean
+              - column:
+                  name: is_skipped
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+              - column:
+                  name: created_by
+                  type: varchar(255)
+              - column:
+                  name: updated_by
+                  type: varchar(255)
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+
+        - createIndex:
+            indexName: idx_task_exec_wf_exec
+            tableName: task_executions
+            columns:
+              - column:
+                  name: workflow_execution_id
+
+        - createIndex:
+            indexName: idx_task_exec_wf_task
+            tableName: task_executions
+            columns:
+              - column:
+                  name: workflow_task_id
+
+        - createIndex:
+            indexName: idx_task_exec_status
+            tableName: task_executions
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            indexName: idx_task_exec_started
+            tableName: task_executions
+            columns:
+              - column:
+                  name: started_at

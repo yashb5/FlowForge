@@ -1,0 +1,122 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-workflow-tasks-table
+      author: flowforge
+      changes:
+        - createTable:
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: workflow_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wf_task_workflow
+                    references: workflows(id)
+              - column:
+                  name: task_definition_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wf_task_def
+                    references: task_definitions(id)
+              - column:
+                  name: task_key
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: execution_order
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: input_overrides
+                  type: jsonb
+              - column:
+                  name: input_mapping
+                  type: jsonb
+              - column:
+                  name: condition_expression
+                  type: text
+              - column:
+                  name: is_enabled
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timeout_override_seconds
+                  type: int
+              - column:
+                  name: max_retries_override
+                  type: int
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+              - column:
+                  name: created_by
+                  type: varchar(255)
+              - column:
+                  name: updated_by
+                  type: varchar(255)
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+
+        - createTable:
+            tableName: workflow_task_dependencies
+            columns:
+              - column:
+                  name: workflow_task_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wf_task_deps
+                    references: workflow_tasks(id)
+              - column:
+                  name: depends_on_task_key
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_wf_task_workflow
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: workflow_id
+
+        - createIndex:
+            indexName: idx_wf_task_def
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: task_definition_id
+
+        - createIndex:
+            indexName: idx_wf_task_order
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: execution_order
+
+        - addUniqueConstraint:
+            tableName: workflow_tasks
+            columnNames: workflow_id, task_key
+            constraintName: uk_workflow_task_key

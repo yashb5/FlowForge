@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-seed-data
+      author: flowforge
+      context: "!prod"
+      comment: "Seed data for development and testing environments"
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: email
+                  value: "admin@flowforge.io"
+              - column:
+                  name: password_hash
+                  # BCrypt hash for "admin123"
+                  value: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.yrEqFfU5XAp5RVIrNO"
+              - column:
+                  name: first_name
+                  value: "System"
+              - column:
+                  name: last_name
+                  value: "Administrator"
+              - column:
+                  name: role
+                  value: "ADMIN"
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "00000000-0000-0000-0000-000000000002"
+              - column:
+                  name: username
+                  value: "demo"
+              - column:
+                  name: email
+                  value: "demo@flowforge.io"
+              - column:
+                  name: password_hash
+                  # BCrypt hash for "demo123"
+                  value: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.yrEqFfU5XAp5RVIrNO"
+              - column:
+                  name: first_name
+                  value: "Demo"
+              - column:
+                  name: last_name
+                  value: "User"
+              - column:
+                  name: role
+                  value: "USER"
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0

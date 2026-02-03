@@ -1,0 +1,149 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-schedules-table
+      author: flowforge
+      changes:
+        - createTable:
+            tableName: schedules
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: workflow_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_schedule_workflow
+                    references: workflows(id)
+              - column:
+                  name: schedule_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cron_expression
+                  type: varchar(100)
+              - column:
+                  name: interval_seconds
+                  type: bigint
+              - column:
+                  name: run_at
+                  type: timestamp with time zone
+              - column:
+                  name: timezone
+                  type: varchar(50)
+                  defaultValue: 'UTC'
+              - column:
+                  name: start_at
+                  type: timestamp with time zone
+              - column:
+                  name: end_at
+                  type: timestamp with time zone
+              - column:
+                  name: next_run_at
+                  type: timestamp with time zone
+              - column:
+                  name: last_run_at
+                  type: timestamp with time zone
+              - column:
+                  name: input_overrides
+                  type: jsonb
+              - column:
+                  name: max_executions
+                  type: int
+              - column:
+                  name: execution_count
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_concurrent_executions
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: catch_up_missed
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_paused
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+              - column:
+                  name: created_by
+                  type: varchar(255)
+              - column:
+                  name: updated_by
+                  type: varchar(255)
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+
+        - createTable:
+            tableName: schedule_tags
+            columns:
+              - column:
+                  name: schedule_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_schedule_tags
+                    references: schedules(id)
+              - column:
+                  name: tag
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_schedule_workflow
+            tableName: schedules
+            columns:
+              - column:
+                  name: workflow_id
+
+        - createIndex:
+            indexName: idx_schedule_next_run
+            tableName: schedules
+            columns:
+              - column:
+                  name: next_run_at
+
+        - createIndex:
+            indexName: idx_schedule_active
+            tableName: schedules
+            columns:
+              - column:
+                  name: is_active

@@ -1,0 +1,124 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-workflows-table
+      author: flowforge
+      changes:
+        - createTable:
+            tableName: workflows
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: owner_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_workflow_owner
+                    references: users(id)
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: global_input
+                  type: jsonb
+              - column:
+                  name: output_mapping
+                  type: jsonb
+              - column:
+                  name: max_concurrency
+                  type: int
+                  defaultValueNumeric: 10
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timeout_seconds
+                  type: int
+                  defaultValueNumeric: 3600
+                  constraints:
+                    nullable: false
+              - column:
+                  name: continue_on_failure
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: error_handler
+                  type: text
+              - column:
+                  name: completion_webhook_url
+                  type: varchar(500)
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+              - column:
+                  name: created_by
+                  type: varchar(255)
+              - column:
+                  name: updated_by
+                  type: varchar(255)
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+
+        - createTable:
+            tableName: workflow_tags
+            columns:
+              - column:
+                  name: workflow_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_workflow_tags
+                    references: workflows(id)
+              - column:
+                  name: tag
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_workflow_name
+            tableName: workflows
+            columns:
+              - column:
+                  name: name
+
+        - createIndex:
+            indexName: idx_workflow_owner
+            tableName: workflows
+            columns:
+              - column:
+                  name: owner_id
+
+        - createIndex:
+            indexName: idx_workflow_status
+            tableName: workflows
+            columns:
+              - column:
+                  name: status

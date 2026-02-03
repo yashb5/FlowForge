@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/001-create-users-table.yaml
+  - include:
+      file: db/changelog/changes/002-create-task-definitions-table.yaml
+  - include:
+      file: db/changelog/changes/003-create-workflows-table.yaml
+  - include:
+      file: db/changelog/changes/004-create-workflow-tasks-table.yaml
+  - include:
+      file: db/changelog/changes/005-create-schedules-table.yaml
+  - include:
+      file: db/changelog/changes/006-create-workflow-executions-table.yaml
+  - include:
+      file: db/changelog/changes/007-create-task-executions-table.yaml
+  - include:
+      file: db/changelog/changes/008-seed-data.yaml
