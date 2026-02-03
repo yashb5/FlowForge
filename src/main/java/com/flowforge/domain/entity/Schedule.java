@@ -3,6 +3,7 @@ package com.flowforge.domain.entity;
 import com.flowforge.domain.enums.ScheduleType;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -27,7 +28,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Schedule extends BaseEntity {
 
     @Column(name = "name", nullable = false, length = 255)

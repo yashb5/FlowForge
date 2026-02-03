@@ -74,14 +74,14 @@ public interface TaskExecutionRepository extends JpaRepository<TaskExecution, UU
            "te.attemptNumber = te.attemptNumber + 1 WHERE te.id = :taskExecutionId")
     void scheduleRetry(@Param("taskExecutionId") UUID taskExecutionId, @Param("nextRetryAt") Instant nextRetryAt);
 
-    @Query("SELECT AVG(EXTRACT(EPOCH FROM (te.completedAt - te.startedAt))) FROM TaskExecution te " +
-           "WHERE te.workflowTask.id = :taskId AND te.status = 'COMPLETED' AND te.completedAt IS NOT NULL")
-    Double getAverageExecutionTimeSeconds(@Param("taskId") UUID taskId);
+    @Query("SELECT te FROM TaskExecution te WHERE te.workflowTask.id = :taskId AND te.status = 'COMPLETED' AND te.completedAt IS NOT NULL")
+    List<TaskExecution> findCompletedByTaskId(@Param("taskId") UUID taskId);
 
-    @Query("SELECT te.workflowTask.taskKey, COUNT(te), " +
-           "SUM(CASE WHEN te.status = 'COMPLETED' THEN 1 ELSE 0 END), " +
-           "SUM(CASE WHEN te.status = 'FAILED' THEN 1 ELSE 0 END) " +
-           "FROM TaskExecution te WHERE te.workflowExecution.workflow.id = :workflowId " +
-           "GROUP BY te.workflowTask.taskKey")
-    List<Object[]> getTaskStatsByWorkflowId(@Param("workflowId") UUID workflowId);
+    @Query("SELECT te.workflowTask.taskKey, COUNT(te) FROM TaskExecution te " +
+           "WHERE te.workflowExecution.workflow.id = :workflowId GROUP BY te.workflowTask.taskKey")
+    List<Object[]> getTaskCountsByWorkflowId(@Param("workflowId") UUID workflowId);
+
+    @Query("SELECT te.workflowTask.taskKey, te.status, COUNT(te) FROM TaskExecution te " +
+           "WHERE te.workflowExecution.workflow.id = :workflowId GROUP BY te.workflowTask.taskKey, te.status")
+    List<Object[]> getTaskStatusCountsByWorkflowId(@Param("workflowId") UUID workflowId);
 }

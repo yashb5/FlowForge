@@ -75,13 +75,12 @@ public interface WorkflowExecutionRepository extends JpaRepository<WorkflowExecu
                           @Param("cancelledBy") UUID cancelledBy,
                           @Param("reason") String reason);
 
-    @Query("SELECT AVG(EXTRACT(EPOCH FROM (we.completedAt - we.startedAt))) FROM WorkflowExecution we " +
-           "WHERE we.workflow.id = :workflowId AND we.status = 'COMPLETED' AND we.completedAt IS NOT NULL")
-    Double getAverageExecutionTimeSeconds(@Param("workflowId") UUID workflowId);
+    @Query("SELECT COUNT(we) FROM WorkflowExecution we WHERE we.workflow.id = :workflowId AND we.status = 'COMPLETED'")
+    long countCompletedByWorkflowId(@Param("workflowId") UUID workflowId);
 
-    @Query(value = "SELECT DATE_TRUNC('day', we.started_at) as day, COUNT(*) as count " +
-                   "FROM workflow_executions we WHERE we.workflow_id = :workflowId " +
-                   "AND we.started_at >= :since GROUP BY DATE_TRUNC('day', we.started_at) " +
-                   "ORDER BY day", nativeQuery = true)
-    List<Object[]> getDailyExecutionCounts(@Param("workflowId") UUID workflowId, @Param("since") Instant since);
+    @Query("SELECT we FROM WorkflowExecution we WHERE we.workflow.id = :workflowId AND we.status = 'COMPLETED' AND we.completedAt IS NOT NULL")
+    List<WorkflowExecution> findCompletedExecutions(@Param("workflowId") UUID workflowId);
+
+    @Query("SELECT we FROM WorkflowExecution we WHERE we.workflow.id = :workflowId AND we.startedAt >= :since")
+    List<WorkflowExecution> findByWorkflowIdAndStartedAtAfter(@Param("workflowId") UUID workflowId, @Param("since") Instant since);
 }

@@ -3,6 +3,7 @@ package com.flowforge.domain.entity;
 import com.flowforge.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -20,7 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class User extends BaseEntity {
 
     @Column(name = "username", nullable = false, unique = true, length = 50)

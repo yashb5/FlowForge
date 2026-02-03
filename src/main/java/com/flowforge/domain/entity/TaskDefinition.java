@@ -4,6 +4,7 @@ import com.flowforge.domain.enums.TaskType;
 import com.flowforge.domain.enums.RetryStrategy;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -26,7 +27,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class TaskDefinition extends BaseEntity {
 
     @Column(name = "name", nullable = false, length = 255)

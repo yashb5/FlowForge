@@ -4,6 +4,7 @@ import com.flowforge.domain.enums.ExecutionStatus;
 import com.flowforge.domain.enums.ExecutionTrigger;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -26,7 +27,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class WorkflowExecution extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
