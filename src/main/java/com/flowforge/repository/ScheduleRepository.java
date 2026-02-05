@@ -55,6 +55,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
     @Query("SELECT COUNT(s) FROM Schedule s WHERE s.workflow.id = :workflowId AND s.isActive = true")
     long countActiveByWorkflowId(@Param("workflowId") UUID workflowId);
 
+    @Query("SELECT COUNT(s) FROM Schedule s WHERE s.isActive = true")
+    long countActiveSchedules();
+
     @Query("SELECT s FROM Schedule s WHERE s.scheduleType = 'ONE_TIME' AND s.isActive = true AND " +
            "s.executionCount > 0")
     List<Schedule> findCompletedOneTimeSchedules();

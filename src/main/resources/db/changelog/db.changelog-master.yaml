@@ -15,3 +15,5 @@ databaseChangeLog:
       file: db/changelog/changes/007-create-task-executions-table.yaml
   - include:
       file: db/changelog/changes/008-seed-data.yaml
+  - include:
+      file: db/changelog/changes/009-seed-metrics-test-data.yaml

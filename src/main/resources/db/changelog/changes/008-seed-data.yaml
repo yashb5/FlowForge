@@ -20,7 +20,7 @@ databaseChangeLog:
               - column:
                   name: password_hash
                   # BCrypt hash for "admin123"
-                  value: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.yrEqFfU5XAp5RVIrNO"
+                  value: "$2a$10$zr8r3.Srsyu6P3vSoKUzDOKaXu/wR8MQN8ez9XnFm5mYZRJ15oAvq"
               - column:
                   name: first_name
                   value: "System"
@@ -55,7 +55,7 @@ databaseChangeLog:
               - column:
                   name: password_hash
                   # BCrypt hash for "demo123"
-                  value: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.yrEqFfU5XAp5RVIrNO"
+                  value: "$2a$10$Cjga5uA8y87uhGwYQwzsleV.6YYS/2nZNzR9iJ75NvRcCKikahARC"
               - column:
                   name: first_name
                   value: "Demo"

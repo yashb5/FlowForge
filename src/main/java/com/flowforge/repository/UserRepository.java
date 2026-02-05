@@ -54,4 +54,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.role = :role AND u.isActive = true")
     long countByRoleAndActive(@Param("role") UserRole role);
+
+    long countByIsActiveTrue();
 }
