@@ -57,4 +57,6 @@ public interface WorkflowRepository extends JpaRepository<Workflow, UUID> {
     List<Workflow> findAllScheduledWorkflows();
 
     boolean existsByNameAndOwnerId(String name, UUID ownerId);
+
+    long countByIsActiveTrue();
 }

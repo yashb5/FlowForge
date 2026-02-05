@@ -63,6 +63,15 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+      # Kubernetes-compatible liveness and readiness probes
+      probes:
+        enabled: true
+  health:
+    # Custom probes enabled for K8s
+    liveness:
+      enabled: true
+    readiness:
+      enabled: true
 
 springdoc:
   api-docs:

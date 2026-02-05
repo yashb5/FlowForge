@@ -1,0 +1,1367 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-seed-metrics-test-data
+      author: flowforge
+      context: "!prod"
+      comment: "Additional seed data for metrics testing (task defs, workflows, executions over past 7 days)"
+      changes:
+        # Task Definitions (4 with varied types)
+        - insert:
+            tableName: task_definitions
+            columns:
+              - column:
+                  name: id
+                  value: "10000000-0000-0000-0000-000000000001"
+              - column:
+                  name: name
+                  value: "HTTP API Fetch"
+              - column:
+                  name: description
+                  value: "Fetches data from external API"
+              - column:
+                  name: task_type
+                  value: "HTTP"
+              - column:
+                  name: owner_id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: handler
+                  value: "https://api.example.com/data"
+              - column:
+                  name: http_method
+                  value: "GET"
+              - column:
+                  name: default_headers
+                  value: '{"Content-Type": "application/json"}'
+              - column:
+                  name: default_input
+                  value: '{}'
+              - column:
+                  name: retry_strategy
+                  value: "FIXED"
+              - column:
+                  name: max_retries
+                  valueNumeric: 3
+              - column:
+                  name: retry_delay_seconds
+                  valueNumeric: 30
+              - column:
+                  name: timeout_seconds
+                  valueNumeric: 60
+              - column:
+                  name: priority
+                  valueNumeric: 5
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_definitions
+            columns:
+              - column:
+                  name: id
+                  value: "10000000-0000-0000-0000-000000000002"
+              - column:
+                  name: name
+                  value: "Script Processor"
+              - column:
+                  name: description
+                  value: "Runs shell script for data processing"
+              - column:
+                  name: task_type
+                  value: "SCRIPT"
+              - column:
+                  name: owner_id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: handler
+                  value: "echo 'Processing data' > /tmp/output.txt"
+              - column:
+                  name: retry_strategy
+                  value: "EXPONENTIAL"
+              - column:
+                  name: max_retries
+                  valueNumeric: 5
+              - column:
+                  name: retry_delay_seconds
+                  valueNumeric: 60
+              - column:
+                  name: timeout_seconds
+                  valueNumeric: 120
+              - column:
+                  name: priority
+                  valueNumeric: 3
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_definitions
+            columns:
+              - column:
+                  name: id
+                  value: "10000000-0000-0000-0000-000000000003"
+              - column:
+                  name: name
+                  value: "Email Notification"
+              - column:
+                  name: description
+                  value: "Sends email alerts"
+              - column:
+                  name: task_type
+                  value: "EMAIL"
+              - column:
+                  name: owner_id
+                  value: "00000000-0000-0000-0000-000000000002"
+              - column:
+                  name: handler
+                  value: "smtp://mail.example.com"
+              - column:
+                  name: default_input
+                  value: '{"to": "alerts@example.com", "subject": "Workflow Alert"}'
+              - column:
+                  name: retry_strategy
+                  value: "FIXED"
+              - column:
+                  name: max_retries
+                  valueNumeric: 2
+              - column:
+                  name: retry_delay_seconds
+                  valueNumeric: 300
+              - column:
+                  name: timeout_seconds
+                  valueNumeric: 30
+              - column:
+                  name: priority
+                  valueNumeric: 10
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_definitions
+            columns:
+              - column:
+                  name: id
+                  value: "10000000-0000-0000-0000-000000000004"
+              - column:
+                  name: name
+                  value: "DB Query"
+              - column:
+                  name: description
+                  value: "Runs database query"
+              - column:
+                  name: task_type
+                  value: "DATABASE"
+              - column:
+                  name: owner_id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: handler
+                  value: "SELECT * FROM logs WHERE date > NOW() - INTERVAL '1 day'"
+              - column:
+                  name: retry_strategy
+                  value: "NONE"
+              - column:
+                  name: max_retries
+                  valueNumeric: 1
+              - column:
+                  name: retry_delay_seconds
+                  valueNumeric: 0
+              - column:
+                  name: timeout_seconds
+                  valueNumeric: 90
+              - column:
+                  name: priority
+                  valueNumeric: 7
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Workflows (3 with task links)
+        - insert:
+            tableName: workflows
+            columns:
+              - column:
+                  name: id
+                  value: "20000000-0000-0000-0000-000000000001"
+              - column:
+                  name: name
+                  value: "Data Pipeline"
+              - column:
+                  name: description
+                  value: "HTTP fetch then script process"
+              - column:
+                  name: owner_id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflows
+            columns:
+              - column:
+                  name: id
+                  value: "20000000-0000-0000-0000-000000000002"
+              - column:
+                  name: name
+                  value: "Alert Workflow"
+              - column:
+                  name: description
+                  value: "Email notification only"
+              - column:
+                  name: owner_id
+                  value: "00000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflows
+            columns:
+              - column:
+                  name: id
+                  value: "20000000-0000-0000-0000-000000000003"
+              - column:
+                  name: name
+                  value: "Query Pipeline"
+              - column:
+                  name: description
+                  value: "DB query then HTTP"
+              - column:
+                  name: owner_id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Workflow Tasks links (multiple per WF, with dependencies)
+        - insert:
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: id
+                  value: "30000000-0000-0000-0000-000000000001"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000001"
+              - column:
+                  name: task_definition_id
+                  value: "10000000-0000-0000-0000-000000000001"
+              - column:
+                  name: task_key
+                  value: "fetchData"
+              - column:
+                  name: name
+                  value: "Fetch Data"
+              - column:
+                  name: execution_order
+                  valueNumeric: 1
+              - column:
+                  name: is_enabled
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: id
+                  value: "30000000-0000-0000-0000-000000000002"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000001"
+              - column:
+                  name: task_definition_id
+                  value: "10000000-0000-0000-0000-000000000002"
+              - column:
+                  name: task_key
+                  value: "processData"
+              - column:
+                  name: name
+                  value: "Process Data"
+              - column:
+                  name: execution_order
+                  valueNumeric: 2
+              - column:
+                  name: is_enabled
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: id
+                  value: "30000000-0000-0000-0000-000000000003"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000002"
+              - column:
+                  name: task_definition_id
+                  value: "10000000-0000-0000-0000-000000000003"
+              - column:
+                  name: task_key
+                  value: "sendAlert"
+              - column:
+                  name: name
+                  value: "Send Alert"
+              - column:
+                  name: execution_order
+                  valueNumeric: 1
+              - column:
+                  name: is_enabled
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: id
+                  value: "30000000-0000-0000-0000-000000000004"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000003"
+              - column:
+                  name: task_definition_id
+                  value: "10000000-0000-0000-0000-000000000004"
+              - column:
+                  name: task_key
+                  value: "queryDB"
+              - column:
+                  name: name
+                  value: "Query DB"
+              - column:
+                  name: execution_order
+                  valueNumeric: 1
+              - column:
+                  name: is_enabled
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_tasks
+            columns:
+              - column:
+                  name: id
+                  value: "30000000-0000-0000-0000-000000000005"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000003"
+              - column:
+                  name: task_definition_id
+                  value: "10000000-0000-0000-0000-000000000001"
+              - column:
+                  name: task_key
+                  value: "notifyAPI"
+              - column:
+                  name: name
+                  value: "Notify API"
+              - column:
+                  name: execution_order
+                  valueNumeric: 2
+              - column:
+                  name: is_enabled
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Workflow Task Dependencies (for tasks that have depends_on)
+        - insert:
+            tableName: workflow_task_dependencies
+            columns:
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000002"
+              - column:
+                  name: depends_on_task_key
+                  value: "fetchData"
+
+        - insert:
+            tableName: workflow_task_dependencies
+            columns:
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000005"
+              - column:
+                  name: depends_on_task_key
+                  value: "queryDB"
+
+        # Workflow Executions (12 with varied statuses and timestamps over past 7 days)
+        # WF1 executions
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000001"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: trigger_type
+                  value: "MANUAL"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '45 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000002"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "FAILED"
+              - column:
+                  name: trigger_type
+                  value: "SCHEDULED"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '30 seconds'"
+              - column:
+                  name: error_message
+                  value: "Script execution failed"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000003"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: trigger_type
+                  value: "MANUAL"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '55 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # WF2 executions
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000004"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: trigger_type
+                  value: "SCHEDULED"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '2 hours'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '2 hours' + INTERVAL '15 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '2 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000005"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "FAILED"
+              - column:
+                  name: trigger_type
+                  value: "MANUAL"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '4 days'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '4 days' + INTERVAL '20 seconds'"
+              - column:
+                  name: error_message
+                  value: "Email send failed"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '4 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000006"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "RUNNING"
+              - column:
+                  name: trigger_type
+                  value: "SCHEDULED"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '12 hours'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '12 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # WF3 executions (more for trends)
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000007"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: trigger_type
+                  value: "MANUAL"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days' + INTERVAL '65 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000008"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "PENDING"
+              - column:
+                  name: trigger_type
+                  value: "SCHEDULED"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 hours'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000009"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: trigger_type
+                  value: "MANUAL"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 days'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 days' + INTERVAL '40 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000010"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: trigger_type
+                  value: "SCHEDULED"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '50 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000011"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "FAILED"
+              - column:
+                  name: trigger_type
+                  value: "MANUAL"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '4 hours'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '4 hours' + INTERVAL '25 seconds'"
+              - column:
+                  name: error_message
+                  value: "Timeout"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '4 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: workflow_executions
+            columns:
+              - column:
+                  name: id
+                  value: "40000000-0000-0000-0000-000000000012"
+              - column:
+                  name: workflow_id
+                  value: "20000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: trigger_type
+                  value: "SCHEDULED"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours' + INTERVAL '70 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Task Executions (corresponding to above WF executions, varied statuses)
+        # For WF1 exec1 (COMPLETED)
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000001"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000001"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '5 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '25 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000002"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000001"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '25 seconds'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '30 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '45 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Similar for other executions (abbrev for brevity, add 1-2 per WF exec with mixed statuses)
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000003"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000002"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '10 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '20 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000004"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000002"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "FAILED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '20 seconds'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '25 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '30 seconds'"
+              - column:
+                  name: error_message
+                  value: "Command failed"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Add more task execs for remaining WF execs (to reach ~20 total, varied)
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000005"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000003"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '5 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '30 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000006"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000004"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '2 hours'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '2 hours' + INTERVAL '5 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '2 hours' + INTERVAL '15 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '1 day' + INTERVAL '2 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Continue pattern for brevity in other executions (PENDING, RUNNING, etc. with timestamps)
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000007"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000005"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "FAILED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '4 days'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '4 days' + INTERVAL '10 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '4 days' + INTERVAL '20 seconds'"
+              - column:
+                  name: error_message
+                  value: "SMTP error"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '4 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000008"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000006"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "RUNNING"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '12 hours'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '12 hours' + INTERVAL '5 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '12 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Additional task executions to cover all WF execs (varied statuses/timestamps)
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000009"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000007"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000004"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days' + INTERVAL '10 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days' + INTERVAL '35 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000010"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000007"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000005"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days' + INTERVAL '35 seconds'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days' + INTERVAL '40 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days' + INTERVAL '65 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '5 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000011"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000008"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000004"
+              - column:
+                  name: status
+                  value: "PENDING"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 hours'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000012"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000009"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000004"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 days'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 days' + INTERVAL '8 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 days' + INTERVAL '30 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000013"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000010"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000001"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '10 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '35 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000014"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000010"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000002"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '35 seconds'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '40 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days' + INTERVAL '50 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '7 days'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000015"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000011"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000003"
+              - column:
+                  name: status
+                  value: "FAILED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '4 hours'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '4 hours' + INTERVAL '10 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '4 hours' + INTERVAL '25 seconds'"
+              - column:
+                  name: error_message
+                  value: "Delivery failed"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '3 days' + INTERVAL '4 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000016"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000012"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000004"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours' + INTERVAL '15 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours' + INTERVAL '45 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000017"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000012"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000005"
+              - column:
+                  name: status
+                  value: "COMPLETED"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours' + INTERVAL '45 seconds'"
+              - column:
+                  name: started_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours' + INTERVAL '50 seconds'"
+              - column:
+                  name: completed_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours' + INTERVAL '70 seconds'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '2 days' + INTERVAL '12 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0
+
+        # Extra for coverage (e.g. PENDING/RUNNING)
+        - insert:
+            tableName: task_executions
+            columns:
+              - column:
+                  name: id
+                  value: "50000000-0000-0000-0000-000000000018"
+              - column:
+                  name: workflow_execution_id
+                  value: "40000000-0000-0000-0000-000000000008"
+              - column:
+                  name: workflow_task_id
+                  value: "30000000-0000-0000-0000-000000000005"
+              - column:
+                  name: status
+                  value: "PENDING"
+              - column:
+                  name: queued_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 hours'"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP - INTERVAL '6 hours'"
+              - column:
+                  name: version
+                  valueNumeric: 0

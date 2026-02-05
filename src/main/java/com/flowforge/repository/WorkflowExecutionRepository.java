@@ -83,4 +83,24 @@ public interface WorkflowExecutionRepository extends JpaRepository<WorkflowExecu
 
     @Query("SELECT we FROM WorkflowExecution we WHERE we.workflow.id = :workflowId AND we.startedAt >= :since")
     List<WorkflowExecution> findByWorkflowIdAndStartedAtAfter(@Param("workflowId") UUID workflowId, @Param("since") Instant since);
+
+    @Query("SELECT COUNT(we) FROM WorkflowExecution we WHERE we.status = :status")
+    long countByStatus(@Param("status") ExecutionStatus status);
+
+    @Query("SELECT COUNT(we) FROM WorkflowExecution we WHERE we.workflow.id = :workflowId")
+    long countByWorkflowId(@Param("workflowId") UUID workflowId);
+
+    @Query("SELECT we FROM WorkflowExecution we WHERE we.startedAt >= :since ORDER BY we.startedAt ASC")
+    List<WorkflowExecution> findByStartedAtAfter(@Param("since") Instant since);
+
+    @Query("SELECT we.status, COUNT(we) FROM WorkflowExecution we GROUP BY we.status")
+    List<Object[]> getExecutionStatusCounts();
+
+    @Query("SELECT we FROM WorkflowExecution we WHERE we.status = 'COMPLETED' " +
+           "AND we.completedAt IS NOT NULL AND we.startedAt IS NOT NULL")
+    List<WorkflowExecution> findCompletedExecutionsWithDuration();
+
+    @Query("SELECT we FROM WorkflowExecution we WHERE we.workflow.id = :workflowId AND we.status = 'COMPLETED' " +
+           "AND we.completedAt IS NOT NULL AND we.startedAt IS NOT NULL")
+    List<WorkflowExecution> findCompletedExecutionsWithDurationByWorkflow(@Param("workflowId") UUID workflowId);
 }
